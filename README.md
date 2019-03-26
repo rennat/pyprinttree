@@ -1,4 +1,4 @@
-# pyprinttree ![build status](https://travis-ci.org/rennat/pyprinttree.svg?branch=master)
+# pyprinttree [![build status](https://travis-ci.org/rennat/pyprinttree.svg?branch=master)](https://travis-ci.org/rennat/pyprinttree)
 
 Use it to print a pretty text based tree representation of whatever data
 you feel like shoving into the graph structure.
