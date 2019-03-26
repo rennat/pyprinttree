@@ -160,7 +160,7 @@ class Tree:
     def get_leaves(self):
         return [node for node in self._nodes.values() if node.is_leaf()]
 
-    def iter_nodefamilystate_bottom_up(self):
+    def iter_nodewithscions_bottom_up(self):
         seen = set()
         deque = collections.deque()
         for node in sorted(self.get_leaves(), key=lambda n: n.id, reverse=True):
@@ -180,7 +180,7 @@ class Tree:
     def iter_nodestate_top_down(self):
         scion_counts = {
             state.node.id: state.scions
-            for state in self.iter_nodefamilystate_bottom_up()
+            for state in self.iter_nodewithscions_bottom_up()
         }
         deque = collections.deque()
         for i, node in enumerate(sorted(self.get_roots(), key=lambda n: n.id, reverse=True)):
