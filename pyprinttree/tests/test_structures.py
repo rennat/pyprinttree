@@ -150,8 +150,8 @@ class MemoryUsageTestCase(unittest.TestCase):
         final_usage = process.memory_info().rss
         used = full_usage - starting_usage
         cleaned = full_usage - final_usage
-        delta = abs(used - cleaned)
-        self.assertLess(delta, 0.015 * used, "memory usage: {}".format({
+        delta = used - cleaned
+        self.assertLess(abs(delta), 0.1 * used, "memory usage: {}".format({
             "starting": starting_usage,
             "full": full_usage,
             "final": final_usage,
