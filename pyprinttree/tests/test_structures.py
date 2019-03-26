@@ -1,10 +1,7 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-import gc
-import os
-
-import psutil
+import sys
 import unittest
 
 import pyprinttree
@@ -127,35 +124,16 @@ class GraphTestCase(unittest.TestCase):
 class MemoryUsageTestCase(unittest.TestCase):
 
     @staticmethod
-    def create_large_tree():
+    def create_linear_tree(nodes):
         tree = pyprinttree.Tree()
-        ids = list(range(10000))
-        for start, end in zip(ids[1:], ids[:-1]):
+        for start, end in zip(nodes[:-1], nodes[1:]):
             tree.add(start, end)
         return tree
 
-    def test_linked_nodes_are_cleaned_up_by_garbage_collection(self):
-        """
-        Test that unreferenced linked nodes are picked up by garbage collection.
-
-        NOTE: If this test fails it may not indicate an actual problem because of the
-        technique employed to test memory recovery.
-        """
-        process = psutil.Process(os.getpid())
-        starting_usage = process.memory_info().rss
-        tree = self.create_large_tree()
-        full_usage = process.memory_info().rss
+    def test_tree_nodes_do_not_retain_references_when_tree_is_removed(self):
+        nodes = list(pyprinttree.Node(x) for x in 'abcd')
+        start_ref_counts = list(sys.getrefcount(n) for n in nodes)
+        tree = self.create_linear_tree(nodes)
         del tree
-        gc.collect()
-        final_usage = process.memory_info().rss
-        used = full_usage - starting_usage
-        cleaned = full_usage - final_usage
-        delta = used - cleaned
-        self.assertLess(abs(delta), 0.1 * used, "memory usage: {}".format({
-            "starting": starting_usage,
-            "full": full_usage,
-            "final": final_usage,
-            "used": used,
-            "cleaned": cleaned,
-            "delta": delta
-        }))
+        end_ref_counts = list(sys.getrefcount(n) for n in nodes)
+        self.assertEqual(start_ref_counts, end_ref_counts)

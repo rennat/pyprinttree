@@ -16,7 +16,6 @@ setuptools.setup(
     url=None,
     packages=setuptools.find_packages(),
     test_suite="pyprinttree.tests",
-    tests_require=['psutil'],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
