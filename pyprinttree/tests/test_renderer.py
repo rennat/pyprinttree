@@ -4,15 +4,15 @@ from __future__ import unicode_literals
 import textwrap
 import unittest
 
-from pyprinttree.loaders import load_from_list
-from pyprinttree.renderer import render_tree_to_string
+from pyprinttree import load_from_pair_list
+from pyprinttree import render_tree_to_string
 
 
 class RendererTestCase(unittest.TestCase):
 
     @staticmethod
     def render(node_id_pairs):
-        tree = load_from_list(node_id_pairs)
+        tree = load_from_pair_list(node_id_pairs)
         return render_tree_to_string(tree)
 
     def test_render_single_branch(self):

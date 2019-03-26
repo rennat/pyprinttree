@@ -5,6 +5,9 @@ import io
 import sys
 
 
+__all__ = ['render_tree', 'render_tree_to_string']
+
+
 def render_tree(tree, stream=sys.stdout):
     last_branch_index = 0
     for node, generation, branch_index in tree.iter_nodestate_top_down():

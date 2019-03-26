@@ -4,7 +4,10 @@ from __future__ import unicode_literals
 from . import structures
 
 
-def load_from_list(node_or_node_id_edge_pairs):
+__all__ = ['load_from_pair_list', 'load_from_csv']
+
+
+def load_from_pair_list(node_or_node_id_edge_pairs):
     tree = structures.Tree()
     for start_node_or_node_id, end_node_or_node_id in node_or_node_id_edge_pairs:
         tree.add(start_node_or_node_id, end_node_or_node_id)

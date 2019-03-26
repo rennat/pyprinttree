@@ -6,7 +6,7 @@ import io
 import sys
 import unittest
 
-import pyprinttree.loaders
+import pyprinttree
 
 
 class ListLoaderTestCase(unittest.TestCase):
@@ -14,7 +14,7 @@ class ListLoaderTestCase(unittest.TestCase):
     def test_loads_node_id_edge_pairs(self):
         node_ids = 'abcdef'
         node_id_edge_pairs = list(zip(node_ids[1:], node_ids[:-1]))
-        tree = pyprinttree.loaders.load_from_list(node_id_edge_pairs)
+        tree = pyprinttree.load_from_pair_list(node_id_edge_pairs)
         self.assertEqual(set(n.id for n in tree.nodes.values()), set(node_ids))
         self.assertEqual(
             set((e.start.id, e.end.id) for e in tree.edges.values()),
@@ -41,7 +41,7 @@ class CsvLoaderTestCase(unittest.TestCase):
             ('b', 1, 2, 3),
             ('c', 1, 2, 3)
         )
-        tree = pyprinttree.loaders.load_from_csv(fake_handle)
+        tree = pyprinttree.load_from_csv(fake_handle)
         self.assertEqual(set(n.id for n in tree.nodes.values()), set('abc'))
         self.assertEqual(len(tree.edges), 0)
 
@@ -51,7 +51,7 @@ class CsvLoaderTestCase(unittest.TestCase):
             (1, 'b', 2, 3),
             (1, 'c', 2, 3)
         )
-        tree = pyprinttree.loaders.load_from_csv(fake_handle, id_column_index=1)
+        tree = pyprinttree.load_from_csv(fake_handle, id_column_index=1)
         self.assertEqual(set(n.id for n in tree.nodes.values()), set('abc'))
         self.assertEqual(len(tree.edges), 0)
 
@@ -62,7 +62,7 @@ class CsvLoaderTestCase(unittest.TestCase):
             ('b', 1, 2, 3),
             ('c', 1, 2, 3)
         )
-        tree = pyprinttree.loaders.load_from_csv(fake_handle, header_row_count=1)
+        tree = pyprinttree.load_from_csv(fake_handle, header_row_count=1)
         self.assertEqual(set(n.id for n in tree.nodes.values()), set('abc'))
         self.assertEqual(len(tree.edges), 0)
 
@@ -72,7 +72,7 @@ class CsvLoaderTestCase(unittest.TestCase):
             (0, 1, 2, 3),
             (None, 1, 2, 3)
         )
-        tree = pyprinttree.loaders.load_from_csv(fake_handle, header_row_count=1)
+        tree = pyprinttree.load_from_csv(fake_handle, header_row_count=1)
         self.assertEqual(set(n.id for n in tree.nodes.values()), set('0'))
         self.assertEqual(len(tree.edges), 0)
 
@@ -82,7 +82,7 @@ class CsvLoaderTestCase(unittest.TestCase):
             ('b', 'a', 2, 3),
             ('c', 'b', 2, 3)
         )
-        tree = pyprinttree.loaders.load_from_csv(fake_handle, parent_column_index=1)
+        tree = pyprinttree.load_from_csv(fake_handle, parent_column_index=1)
         self.assertEqual(set(n.id for n in tree.nodes.values()), set('abc'))
         self.assertEqual(
             set((e.start.id, e.end.id) for e in tree.edges.values()),
@@ -95,7 +95,7 @@ class CsvLoaderTestCase(unittest.TestCase):
             ('b', 'c', 2, 3),
             ('c', None, 2, 3)
         )
-        tree = pyprinttree.loaders.load_from_csv(fake_handle, child_column_index=1)
+        tree = pyprinttree.load_from_csv(fake_handle, child_column_index=1)
         self.assertEqual(set(n.id for n in tree.nodes.values()), set('abc'))
         self.assertEqual(
             set((e.start.id, e.end.id) for e in tree.edges.values()),
