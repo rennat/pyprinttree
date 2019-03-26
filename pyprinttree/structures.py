@@ -93,6 +93,7 @@ class Edge:
 class Tree:
 
     NodeState = collections.namedtuple('NodeState', ('node', 'generation', 'branch_index',))
+    NodeWithScions = collections.namedtuple('NodeWithScions', ('node', 'scions',))
 
     def __init__(self):
         self._nodes = dict()
@@ -154,14 +155,35 @@ class Tree:
         return start_node, end_node, edge
 
     def get_roots(self):
-        return [
-            node for node in self._nodes.values()
-            if node.is_root()
-        ]
+        return [node for node in self._nodes.values() if node.is_root()]
+
+    def get_leaves(self):
+        return [node for node in self._nodes.values() if node.is_leaf()]
+
+    def iter_nodefamilystate_bottom_up(self):
+        seen = set()
+        deque = collections.deque()
+        for node in sorted(self.get_leaves(), key=lambda n: n.id, reverse=True):
+            deque.append(self.NodeWithScions(node, 0))
+        while True:
+            try:
+                state = deque.pop()
+            except IndexError:
+                break
+            seen.add(state.node.id)
+            yield state
+            for parent in state.node.parents:
+                if parent.id in seen:
+                    continue
+                deque.append(self.NodeWithScions(parent, state.scions + 1))
 
     def iter_nodestate_top_down(self):
+        scion_counts = {
+            state.node.id: state.scions
+            for state in self.iter_nodefamilystate_bottom_up()
+        }
         deque = collections.deque()
-        for i, node in enumerate(self.get_roots()):
+        for i, node in enumerate(sorted(self.get_roots(), key=lambda n: n.id, reverse=True)):
             deque.append(self.NodeState(node, 0, i))
         while True:
             try:
@@ -169,5 +191,6 @@ class Tree:
             except IndexError:
                 break
             yield state
-            for i, child in enumerate(state.node.children):
+            child_iterator = sorted(state.node.children, key=lambda n: (-scion_counts[n.id], n.id))
+            for i, child in enumerate(child_iterator):
                 deque.append(self.NodeState(child, state.generation + 1, state.branch_index + i))

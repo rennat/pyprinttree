@@ -3,7 +3,6 @@ from __future__ import unicode_literals
 
 import gc
 import os
-import time
 
 import psutil
 import unittest
@@ -94,9 +93,9 @@ class GraphTestCase(unittest.TestCase):
         tree.add('a', 'b')
         tree.add('a', 'c')
         tree.add('b', 'd')
-        self.assertEqual(list(tree.get_roots()), ['a'])
+        self.assertEqual(set(tree.get_roots()), set('a'))
         tree.add('e', 'f')
-        self.assertEqual(list(tree.get_roots()), ['a', 'e'])
+        self.assertEqual(set(tree.get_roots()), set('ae'))
 
     def test_iter_nodes_top_down(self):
         tree = pyprinttree.Tree()
@@ -107,25 +106,21 @@ class GraphTestCase(unittest.TestCase):
         iterable = tree.iter_nodestate_top_down()
         self.assertIs(iterable, iter(iterable))
         self.assertEqual(
-            set(
-                (node.id, generation, branch_index)
-                for node, generation, branch_index
-                in iterable
-            ),
-            {
-                ('a', 0, 0),
-                ('b', 1, 0),
-                ('c', 2, 0),
-                ('d', 3, 0),
-
-                ('e', 2, 1),
-                ('f', 3, 1),
-
-                ('g', 2, 2),
-                ('h', 3, 2),
-
-                ('i', 0, 1),
-            }
+            [
+                (state.node.id, state.generation, state.branch_index)
+                for state in iterable
+            ],
+            [
+                ('a', 0, 1),
+                ('b', 1, 1),
+                ('g', 2, 3),
+                ('h', 3, 3),
+                ('e', 2, 2),
+                ('f', 3, 2),
+                ('c', 2, 1),
+                ('d', 3, 1),
+                ('i', 0, 0),
+            ]
         )
 
 
